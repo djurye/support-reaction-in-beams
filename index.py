@@ -3,6 +3,7 @@ from resultants import Resultants
 
 def calculate_resultant(list_force, list_resultant):
     result = Resultants(list_force, list_resultant)
+    result.get_distance_from_pin()
     result.get_sum_forcex()
     result.get_sum_forcey()
     result.get_sum_moment()

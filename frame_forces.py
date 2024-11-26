@@ -30,8 +30,8 @@ class Frame_forces(tk.Frame):
         # Configuração de redimensionamento automático do canvas
         self.frame_inner.bind("<Configure>", self.update_scrollregion)
 
-        self.create_resultant_input(0, F'R1')
-        self.create_resultant_input(1, F'R2')
+        self.create_resultant_input(0, F'Pino')
+        self.create_resultant_input(1, F'Rolete')
 
         # Criação das entradas iniciais (f1, f2, f3, f4)
         for i in range(1, self.force_count + 1):
@@ -69,6 +69,37 @@ class Frame_forces(tk.Frame):
         lbl_param2.grid(row=row, column=6, padx=3, pady=5)
         entry_param2 = tk.Entry(self.frame_inner, width=10)
         entry_param2.grid(row=row, column=7, padx=3, pady=5)
+
+        # Desabilitar param1 e param2 inicialmente
+        entry_param1.config(state="disabled")
+        entry_param2.config(state="disabled")
+
+        def toggle_param_entries(*args):
+            selected_option_value = selected_option.get()  # Obtém o valor atual do OptionMenu
+
+            if selected_option_value == "Selecione":
+                entry_param1.config(state="disabled")
+                entry_param2.config(state="disabled")
+                lbl_param1.config(text="param1:")  # Texto padrão
+                lbl_param2.config(text="param2:")  # Texto padrão
+            else:
+                entry_param1.config(state="normal")
+                entry_param2.config(state="normal")
+                
+                # Atualiza os textos com base na opção selecionada
+                if selected_option_value == "Fx e Fy":
+                    lbl_param1.config(text="Fx:")
+                    lbl_param2.config(text="Fy:")
+                elif selected_option_value == "Módulo e teta":
+                    lbl_param1.config(text="Módulo:")
+                    lbl_param2.config(text="Teta:")
+                elif selected_option_value == "Módulo e vetor n":
+                    lbl_param1.config(text="Módulo:")
+                    lbl_param2.config(text="Vetor n:")
+
+
+        # Vincular a função ao OptionMenu
+        selected_option.trace_add("write", toggle_param_entries)
 
         # Armazenando todos os widgets no dicionário
         self.entries[label_text] = {
@@ -115,11 +146,14 @@ class Frame_forces(tk.Frame):
 
     def update_force_resultant_data(self):
         for label, widgets in self.force_data.items():
-            if label[0] == 'R':
+            if label == 'Pino' or label == 'Rolete':
                 # Extrair o valor da entrada de distância
                 distance_entry = widgets['distance']
-                self.force_data[label]['distance'] = distance_entry.get()
-            
+                a= type(distance_entry)
+                if  isinstance(distance_entry, tk.Entry):
+                    self.force_data[label]['distance'] = distance_entry.get()
+                else:
+                    self.force_data[label]['distance'] = distance_entry
             elif label[0] == 'F':
                 # Extrair o valor do OptionMenu a partir da StringVar associada
                 option_menu_var = widgets['param_given']  # Aqui você armazena a StringVar, não o OptionMenu
@@ -128,13 +162,20 @@ class Frame_forces(tk.Frame):
 
                 # Extrair o valor da entrada de distância
                 distance_entry = widgets['distance']
-                self.force_data[label]['distance'] = distance_entry.get()
+                if  isinstance(distance_entry, tk.Entry):
+                    self.force_data[label]['distance'] = distance_entry.get()
+                else:
+                    self.force_data[label]['distance'] = distance_entry
 
                 # Extrair os valores dos parâmetros 1 e 2
                 param1_entry = widgets['param1']
                 param2_entry = widgets['param2']
-                self.force_data[label]['param1'] = param1_entry.get()
-                self.force_data[label]['param2'] = param2_entry.get()
+                if  isinstance(distance_entry, tk.Entry):
+                    self.force_data[label]['param1'] = param1_entry.get()
+                    self.force_data[label]['param2'] = param2_entry.get()
+                else:
+                    self.force_data[label]['param1'] = param1_entry
+                    self.force_data[label]['param2'] = param2_entry
         return self.force_data
 
     def delete_force_input(self, label_text):

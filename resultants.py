@@ -10,6 +10,15 @@ class Resultants:
         self.resultants = resultants if resultants is not None else []
         self.forces = forces if forces is not None else []
 
+    def get_distance_from_pin(self):
+        pin_distance = self.resultants[0].distance
+    
+        for force in self.forces:
+            force.relative_distance = force.distance - pin_distance
+        for resultant in self.resultants:
+            resultant.relative_distance = resultant.distance - pin_distance
+    
+
     def get_sum_forcex(self):
         for force in self.forces:
             self.sum_forcex += force.forcex
@@ -20,14 +29,14 @@ class Resultants:
 
     def get_sum_moment(self):
         for force in self.forces:
-            self.sum_moment += force.forcey + force.distance
+            self.sum_moment += force.forcey * force.relative_distance
 
     def get_resultantx(self):
-        self.resultants[0].forcex = self.sum_forcex
-        self.resultants[1].forcex = 0
+        self.resultants[0].forcex = - self.sum_forcex
+        self.resultants[1].forcex = 0                                                                                                                                                                                                                                                                                                                                                                                                            
 
     def get_resultanty(self):
-        self.resultants[1].forcey = - (self.sum_moment / self.resultants[1].distance)
+        self.resultants[1].forcey = - (self.sum_moment / self.resultants[1].relative_distance)
         self.sum_forcey += self.resultants[1].forcey
         self.resultants[0].forcey = - (self.sum_forcey)
     

@@ -6,9 +6,11 @@ class Frame_illustrations(tk.Frame):
         super().__init__(root)
 
         # Configurações da barra
-        self.bar_length = 250  # Comprimento da barra em pixels
+        self.bar_length = 0
         self.num_points = 20  # Número de divisões da barra
         self.forces = []  # Lista de forças aplicadas (posição, magnitude e ângulo)
+        self.force_pos_min = 0
+        self.force_pos_max = 0
         self.supports = []
 
         # Criar o canvas para desenhar dentro do próprio frame
@@ -21,29 +23,28 @@ class Frame_illustrations(tk.Frame):
         self.force_angle = 90
 
         # Inicializar o desenho da barra
-        self.draw_bar()
-
-    def apply_force(self, force_position, force_angle, force_type):
+        #self.draw_bar()
+    
+    def apply_force(self, force_position, force_angle, force_type, bar_lenght, bar_pos_min):
         """Aplica uma nova força e redesenha a barra com todas as forças."""
         try:
-            if 0 <= force_position <= 10 and -360 <= force_angle <= 360:
+            if -360 <= force_angle <= 360:
                 # Adiciona a nova força à lista
-                point_index = int((force_position / 10) * self.num_points)
-                self.forces.append((force_type, point_index, force_angle))
+                point_index = int(((force_position - bar_pos_min) / bar_lenght) * self.num_points)
+                self.forces.append((force_type, point_index, force_angle, force_position))
                 self.force_count = 1
                 self.resultant_count = 1
-                self.draw_bar()
+                #self.draw_bar()
             else:
                 print("Posição ou ângulo inválido!")
         except ValueError:
             print("Entrada inválida!")
 
-    def apply_suport(self, suport_position):
-        point_index = int((suport_position / 10) * self.num_points)
+    def apply_suport(self, suport_position, bar_length, bar_pos_min):
+        point_index = int(((suport_position - bar_pos_min)/ bar_length) * self.num_points)
         self.supports.append(point_index)
         self.support_count = 1
-        self.draw_bar()
-
+        #self.draw_bar()
 
     def draw_bar(self):
         """Desenha a barra e todas as forças aplicadas."""
@@ -55,7 +56,7 @@ class Frame_illustrations(tk.Frame):
         y_start = 125
 
         # Ponto final da barra (barra sempre horizontal)
-        x_end = x_start + self.bar_length
+        x_end = x_start + 250
         y_end = y_start
 
         # Desenha a barra
@@ -70,7 +71,7 @@ class Frame_illustrations(tk.Frame):
             self.canvas.create_oval(x_point - 2, y_point - 2, x_point + 2, y_point + 2, fill="black")
 
         # Desenha as forças aplicadas
-        for force_type, point_index, force_angle in self.forces:
+        for force_type, point_index, force_angle, force_posicion in self.forces:
             x_force = points[point_index][0]
             y_force = points[point_index][1]
 
@@ -94,21 +95,22 @@ class Frame_illustrations(tk.Frame):
                 self.force_count +=1
 
             self.canvas.create_text(x_force, y_force - 60, text=f"{force_type}{count}", fill="red")
-            self.canvas.create_text(x_force, y_force + 60, text=f"r={point_index}", fill="red")
+            self.canvas.create_text(x_force, y_force + 60, text=f"r={force_posicion}", fill="red")
 
         # Desenha os suportes
-        for point_index in self.supports:
-            x_support = points[point_index][0]
-            y_support = points[point_index][1]
+        # Primeiro desenho: Triângulo
+        x_support = points[self.supports[0]][0]
+        y_support = points[self.supports[0]][1]
+        xa, xb, xc = x_support-10, x_support+10, x_support
+        ya, yb, yc = y_support+15, y_support+15, y_support
+        self.canvas.create_polygon(xa, ya, xb, yb, xc, yc, fill="blue", width=0)
 
-            # Calcula as coordenadas do triangulo
-            xa, xb, xc = x_support-10, x_support+10, x_support
-            ya, yb, yc = y_support+15, y_support+15, y_support
-
-            # Desenha o triangulo
-            self.canvas.create_polygon(xa, ya, xb, yb, xc, yc, fill="blue", width=2)
-
-            self.support_count+=1
+        # Segundo desenho: Círculo
+        x_support = points[self.supports[1]][0]
+        y_support = points[self.supports[1]][1]
+        xa, xb = x_support-7.5, x_support+7.5
+        ya, yb = y_support, y_support+15
+        self.canvas.create_oval(xa, ya, xb, yb, fill="blue", width=0)
 
 # Inicializar a aplicação Tkinter
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ class Frame_resultants(tk.Frame):
         # Definindo os dados a serem exibidos
         module = str(round(force.module,4))
         r = str(round(force.distance,4))
-        teta = str(round(force.teta,4))
+        teta = str(round(force.tetadegree,4))
         fx = str(round(force.forcex,4))
         fy = str(round(force.forcey,4))
         n = str(force.nvector)
