@@ -1,5 +1,5 @@
 
-from resultants import Resultants
+from models.resultants import Resultants
 
 def calculate_resultant(list_force, list_resultant):
     result = Resultants(list_force, list_resultant)
