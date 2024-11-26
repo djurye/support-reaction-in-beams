@@ -131,7 +131,7 @@ class InterfaceApp(tk.Tk):
 
                 elif force_data[force]['param_given'] == 'Módulo e teta':
                     force_data[force]['param1'] = float(force_data[force]['param1'])
-                    force_data[force]['param_given'] = pg.Param_given.MODULE_TETA
+                    force_data[force]['param_given'] = pg.MODULE_TETA
 
                 elif force_data[force]['param_given'] == 'Módulo e vetor n':
                     force_data[force]['param1'] = float(force_data[force]['param1'])
